@@ -6,11 +6,16 @@
  */
 
 "use strict";
-
+require("dotenv").config();
 // Access token for your app
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
 const token = process.env.WHATSAPP_TOKEN;
+const fs = require("fs");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const routes = require("./src/routes/record");
+const filePath = "./newFile.txt";
 
 // Imports dependencies and set up http server
 const request = require("request"),
@@ -18,15 +23,38 @@ const request = require("request"),
   body_parser = require("body-parser"),
   axios = require("axios").default,
   app = express().use(body_parser.json()); // creates express http server
+app.use(cors());
 
-// Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
+// Middleware
 
+app.use(cors());
+
+// Routes
+app.use("/api/v1", routes);
+
+// Error handler
+const start = async () => {
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO URI not found");
+  }
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log(`Connected to MongoDb ===> ${process.env.MONGO_URI}`);
+  } catch (err) {
+    console.error(err);
+  }
+  app.listen(process.env.PORT || 1337, () => {
+    console.log(`Listening on port ${process.env.PORT}`);
+  });
+};
+
+start();
+// Accepts POST requests at /webhook endpoint
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
   // Parse the request body from the POST
   let body = req.body;
-
+  console.log(req.hostname, req.protocol, "jjj");
   // Check the Incoming webhook message
   console.log(JSON.stringify(req.body, null, 2));
 
@@ -43,21 +71,40 @@ app.post("/webhook", (req, res) => {
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
       let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-      axios({
-        method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-        url:
-          "https://graph.facebook.com/v12.0/" +
-          phone_number_id +
-          "/messages?access_token=" +
-          token,
-        data: {
-          messaging_product: "whatsapp",
-          to: from,
-          text: { body: "Ack: " + msg_body },
-        },
-        headers: { "Content-Type": "application/json" },
-      });
+
+      // axios({
+      //   method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+      //   url:
+      //     "https://graph.facebook.com/v12.0/" +
+      //     phone_number_id +
+      //     "/messages?access_token=" +
+      //     token,
+      //   data: {
+      //     messaging_product: "whatsapp",
+      //     to: from,
+      //     text: { body: "www.jumia.com: " + msg_body },
+      //   },
+      //   headers: { "Content-Type": "application/json" },
+      // });
     }
+    axios({
+      method: "POST",
+      url: "http://localhost:1337/api/v1/save",
+      data: {
+        name: req?.body?.entry?.[0]?.changes[0]?.value?.contacts[0]?.profile?.name.toString(),
+        phone_number:
+          req?.body?.entry?.[0]?.changes[0].value.contacts[0].wa_id.toString(),
+        text: req?.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.text?.body.toString(),
+        time: req?.body?.entry?.[0]?.changes[0]?.value?.messages[0]?.timestamp.toString(),
+      },
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        console.log("Record saved successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error saving record:", error);
+      });
     res.sendStatus(200);
   } else {
     // Return a '404 Not Found' if event is not from a WhatsApp API
@@ -66,12 +113,12 @@ app.post("/webhook", (req, res) => {
 });
 
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
-// info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests 
+// info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
 app.get("/webhook", (req, res) => {
   /**
    * UPDATE YOUR VERIFY TOKEN
    *This will be the Verify Token value when you set up webhook
-  **/
+   **/
   const verify_token = process.env.VERIFY_TOKEN;
 
   // Parse params from the webhook verification request

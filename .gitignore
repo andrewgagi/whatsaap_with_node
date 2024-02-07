@@ -1,0 +1,10 @@
+node_modules
+/node_modules
+.env
+.node-gyp
+newFile.txt
+glitch-package-manager
+.bash_history
+update-notifier-npm.json
+update-notifier-pnpm.json
+.glitchdotcom.json

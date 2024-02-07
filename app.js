@@ -89,13 +89,58 @@ app.post("/webhook", (req, res) => {
     }
     axios({
       method: "POST",
-      url: "http://localhost:1337/api/v1/save",
+      url: "https://whatsaap-gtqe.onrender.com/api/v1/save",
       data: {
-        name: req.body?.entry?.[0]?.changes[0]?.value?.contacts[0]?.profile?.name.toString(),
+        name:
+          req.body &&
+          req.body.entry &&
+          req.body.entry[0] &&
+          req.body.entry[0].changes &&
+          req.body.entry[0].changes[0] &&
+          req.body.entry[0].changes[0].value &&
+          req.body.entry[0].changes[0].value.contacts &&
+          req.body.entry[0].changes[0].value.contacts[0] &&
+          req.body.entry[0].changes[0].value.contacts[0].profile &&
+          req.body.entry[0].changes[0].value.contacts[0].profile.name
+            ? req.body.entry[0].changes[0].value.contacts[0].profile.name.toString()
+            : "",
         phone_number:
-          req.body?.entry?.[0]?.changes[0].value.contacts[0].wa_id.toString(),
-        text: req.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.text?.body.toString(),
-        time: req.body?.entry?.[0]?.changes[0]?.value?.messages[0]?.timestamp.toString(),
+          req.body &&
+          req.body.entry &&
+          req.body.entry[0] &&
+          req.body.entry[0].changes &&
+          req.body.entry[0].changes[0] &&
+          req.body.entry[0].changes[0].value &&
+          req.body.entry[0].changes[0].value.contacts &&
+          req.body.entry[0].changes[0].value.contacts[0] &&
+          req.body.entry[0].changes[0].value.contacts[0].wa_id
+            ? req.body.entry[0].changes[0].value.contacts[0].wa_id.toString()
+            : "",
+        text:
+          req.body &&
+          req.body.entry &&
+          req.body.entry[0] &&
+          req.body.entry[0].changes &&
+          req.body.entry[0].changes[0] &&
+          req.body.entry[0].changes[0].value &&
+          req.body.entry[0].changes[0].value.messages &&
+          req.body.entry[0].changes[0].value.messages[0] &&
+          req.body.entry[0].changes[0].value.messages[0].text &&
+          req.body.entry[0].changes[0].value.messages[0].text.body
+            ? req.body.entry[0].changes[0].value.messages[0].text.body.toString()
+            : "",
+        time:
+          req.body &&
+          req.body.entry &&
+          req.body.entry[0] &&
+          req.body.entry[0].changes &&
+          req.body.entry[0].changes[0] &&
+          req.body.entry[0].changes[0].value &&
+          req.body.entry[0].changes[0].value.messages &&
+          req.body.entry[0].changes[0].value.messages[0] &&
+          req.body.entry[0].changes[0].value.messages[0].timestamp
+            ? req.body.entry[0].changes[0].value.messages[0].timestamp.toString()
+            : "",
       },
       headers: { "Content-Type": "application/json" },
     })

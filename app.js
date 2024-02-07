@@ -87,14 +87,14 @@ app.post("/webhook", (req, res) => {
             !msg_body.toLowerCase().includes("2") &&
             !msg_body.toLowerCase().includes("3")
               ? {
-                  body: "welcome reply with 1. order here 2. track here 3. order history",
+                  body: "👋 Welcome! Reply with:\n1. Order 🛒 Here\n2. Track 🚚 Here\n3. Order 📜 History",
                 }
               : msg_body.toLowerCase().includes("1")
-              ? { body: "order here www.http.gagi.com" }
+              ? { body: "🛒 Order here: www.http.gagi.com" }
               : msg_body.toLowerCase().includes("2")
-              ? { body: "track here" }
+              ? { body: "🚚 Track your order here" }
               : msg_body.toLowerCase().includes("3")
-              ? { body: "order history" }
+              ? { body: "📜 View your order history" }
               : { body: msg_body },
         },
 

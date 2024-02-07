@@ -72,20 +72,34 @@ app.post("/webhook", (req, res) => {
       let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
       let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
 
-      // axios({
-      //   method: "POST", // Required, HTTP method, a string, e.g. POST, GET
-      //   url:
-      //     "https://graph.facebook.com/v12.0/" +
-      //     phone_number_id +
-      //     "/messages?access_token=" +
-      //     token,
-      //   data: {
-      //     messaging_product: "whatsapp",
-      //     to: from,
-      //     text: { body: "www.jumia.com: " + msg_body },
-      //   },
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      axios({
+        method: "POST", // Required, HTTP method, a string, e.g. POST, GET
+        url:
+          "https://graph.facebook.com/v12.0/" +
+          phone_number_id +
+          "/messages?access_token=" +
+          token,
+        data: {
+          messaging_product: "whatsapp",
+          to: from,
+          text:
+            !msg_body.toLowerCase().includes("1") &&
+            !msg_body.toLowerCase().includes("2") &&
+            !msg_body.toLowerCase().includes("3")
+              ? {
+                  body: "welcome reply with 1. order here 2. track here 3. order history",
+                }
+              : msg_body.toLowerCase().includes("1")
+              ? { body: "order here www.http.gagi.com" }
+              : msg_body.toLowerCase().includes("2")
+              ? { body: "track here" }
+              : msg_body.toLowerCase().includes("3")
+              ? { body: "order history" }
+              : { body: msg_body },
+        },
+
+        headers: { "Content-Type": "application/json" },
+      });
     }
     axios({
       method: "POST",

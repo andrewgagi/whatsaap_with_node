@@ -24,4 +24,14 @@ const createRecord = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-module.exports = createRecord;
+getRecords = (req, res) => {
+  RecordModule.Record.find()
+    .then((record) => {
+      res.status(200).json(record);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ error: "Something went wrong" });
+    });
+};
+module.exports = { createRecord, getRecords };

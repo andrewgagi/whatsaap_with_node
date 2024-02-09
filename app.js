@@ -90,11 +90,17 @@ app.post("/webhook", (req, res) => {
                   body: "👋 Welcome! Reply with:\n1. Order 🛒 Here\n2. Track 🚚 Here\n3. Order 📜 History",
                 }
               : msg_body.toLowerCase().includes("1")
-              ? { body: "🛒 Order here: www.http.gagi.com" }
+              ? {
+                  body: `🛒 Order here: https://dbfg-db198.web.app/our-product`,
+                }
               : msg_body.toLowerCase().includes("2")
-              ? { body: "🚚 Track your order here" }
+              ? {
+                  body: "🚚 Track your order here https://dbfg-db198.web.app/shopping-cart",
+                }
               : msg_body.toLowerCase().includes("3")
-              ? { body: "📜 View your order history" }
+              ? {
+                  body: "📜 View your order history https://dbfg-db198.web.app/checkout",
+                }
               : { body: msg_body },
         },
 

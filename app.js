@@ -91,15 +91,15 @@ app.post("/webhook", (req, res) => {
                 }
               : msg_body.toLowerCase().includes("1")
               ? {
-                  body: `🛒 Order here: https://dbfg-db198.web.app/our-product`,
+                  body: `🛒 Order here: http://165.232.138.6:8000/us`,
                 }
               : msg_body.toLowerCase().includes("2")
               ? {
-                  body: "🚚 Track your order here https://dbfg-db198.web.app/shopping-cart",
+                  body: "🚚 Track your order here http://165.232.138.6:8000/us/cart",
                 }
               : msg_body.toLowerCase().includes("3")
               ? {
-                  body: "📜 View your order history https://dbfg-db198.web.app/checkout",
+                  body: "📜 View your order history http://165.232.138.6:8000/us/checkout?step=address",
                 }
               : { body: msg_body },
         },
